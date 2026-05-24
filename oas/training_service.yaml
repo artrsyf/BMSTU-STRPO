@@ -1,0 +1,477 @@
+openapi: "3.1.0"
+
+info:
+  title: Автошкола — Training Service
+  version: "0.1"
+  description: |
+    Сервис управления обучением.
+    Отвечает за создание плана обучения, добавление занятий,
+    согласование расписания и завершение обучения.
+
+servers:
+  - url: http://localhost:8082
+    description: Локальный сервер Training Service
+
+paths:
+  /training-plans:
+    description: Планы обучения учеников
+
+    get:
+      summary: Получение списка планов обучения
+      parameters:
+        - name: studentId
+          in: query
+          required: false
+          description: Идентификатор ученика
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          description: Статус плана обучения
+          schema:
+            $ref: "#/components/schemas/TrainingPlanStatus"
+
+      responses:
+        "200":
+          description: Список планов обучения
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrainingPlan"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Создание плана обучения
+      description: |
+        Создание плана обучения для ученика.
+        Используется после регистрации ученика в Student Service.
+      requestBody:
+        required: true
+        description: Данные для создания плана обучения
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTrainingPlanRequest"
+
+      responses:
+        "201":
+          description: План обучения создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingPlan"
+
+        "400":
+          description: Ошибка в логике запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /training-plans/{trainingPlanId}:
+    description: Работа с конкретным планом обучения
+
+    parameters:
+      - name: trainingPlanId
+        in: path
+        required: true
+        description: Уникальный идентификатор плана обучения
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Получение плана обучения
+      description: |
+        Получение плана обучения вместе со списком занятий.
+      responses:
+        "200":
+          description: План обучения найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingPlan"
+
+        "404":
+          description: План обучения не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /training-plans/{trainingPlanId}/lessons:
+    description: Занятия в плане обучения
+
+    parameters:
+      - name: trainingPlanId
+        in: path
+        required: true
+        description: Уникальный идентификатор плана обучения
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      summary: Добавление занятия
+      description: |
+        Добавление теоретического или практического занятия
+        в план обучения ученика.
+      requestBody:
+        required: true
+        description: Данные занятия
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLessonRequest"
+
+      responses:
+        "201":
+          description: Занятие добавлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+
+        "400":
+          description: Ошибка в логике запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: План обучения не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /training-plans/{trainingPlanId}/approve:
+    description: Согласование плана обучения
+
+    parameters:
+      - name: trainingPlanId
+        in: path
+        required: true
+        description: Уникальный идентификатор плана обучения
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Согласование расписания
+      description: |
+        Подтверждение учеником предложенного расписания.
+        После подтверждения план обучения получает статус Approved.
+      responses:
+        "200":
+          description: План обучения согласован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingPlan"
+
+        "400":
+          description: План обучения не может быть согласован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: План обучения не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /training-plans/{trainingPlanId}/complete:
+    description: Завершение обучения
+
+    parameters:
+      - name: trainingPlanId
+        in: path
+        required: true
+        description: Уникальный идентификатор плана обучения
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Завершение плана обучения
+      description: |
+        Отметка плана обучения как завершённого.
+        После этого ученик может быть допущен к экзамену.
+      responses:
+        "200":
+          description: План обучения завершён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingPlan"
+
+        "400":
+          description: План обучения не может быть завершён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: План обучения не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /lessons/{lessonId}/complete:
+    description: Завершение занятия
+
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        description: Уникальный идентификатор занятия
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Отметка занятия как проведённого
+      description: |
+        Изменение статуса занятия на Completed.
+        Используется администратором для фиксации прогресса обучения.
+      responses:
+        "200":
+          description: Занятие завершено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+
+        "400":
+          description: Занятие не может быть завершено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: Занятие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    CreateTrainingPlanRequest:
+      type: object
+      description: Данные для создания плана обучения
+      required:
+        - studentId
+      properties:
+        studentId:
+          type: string
+          format: uuid
+          description: Идентификатор ученика из Student Service
+          example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+
+    CreateLessonRequest:
+      type: object
+      description: Данные для создания занятия
+      required:
+        - lessonType
+        - startTime
+        - endTime
+        - instructorName
+      properties:
+        lessonType:
+          $ref: "#/components/schemas/LessonType"
+        startTime:
+          type: string
+          format: date-time
+          description: Дата и время начала занятия
+          example: "2026-06-01T10:00:00Z"
+        endTime:
+          type: string
+          format: date-time
+          description: Дата и время окончания занятия
+          example: "2026-06-01T11:30:00Z"
+        instructorName:
+          type: string
+          description: ФИО инструктора
+          example: "Петров Пётр Петрович"
+
+    TrainingPlan:
+      type: object
+      description: План обучения ученика
+      required:
+        - trainingPlanId
+        - studentId
+        - status
+        - lessons
+        - createdAt
+      properties:
+        trainingPlanId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор плана обучения
+          example: "9c1d6a3f-0b2a-4a60-9f6b-3b4c5d6e7f80"
+        studentId:
+          type: string
+          format: uuid
+          description: Идентификатор ученика
+          example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+        status:
+          $ref: "#/components/schemas/TrainingPlanStatus"
+        lessons:
+          type: array
+          description: Список занятий
+          items:
+            $ref: "#/components/schemas/Lesson"
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время создания плана обучения
+          example: "2026-05-25T10:30:00Z"
+
+    Lesson:
+      type: object
+      description: Занятие в плане обучения
+      required:
+        - lessonId
+        - trainingPlanId
+        - lessonType
+        - startTime
+        - endTime
+        - instructorName
+        - status
+      properties:
+        lessonId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор занятия
+          example: "2f6d8a1c-4e5b-42a1-91ab-7e8f9a0b1c2d"
+        trainingPlanId:
+          type: string
+          format: uuid
+          description: Идентификатор плана обучения
+          example: "9c1d6a3f-0b2a-4a60-9f6b-3b4c5d6e7f80"
+        lessonType:
+          $ref: "#/components/schemas/LessonType"
+        startTime:
+          type: string
+          format: date-time
+          description: Дата и время начала занятия
+          example: "2026-06-01T10:00:00Z"
+        endTime:
+          type: string
+          format: date-time
+          description: Дата и время окончания занятия
+          example: "2026-06-01T11:30:00Z"
+        instructorName:
+          type: string
+          description: ФИО инструктора
+          example: "Петров Пётр Петрович"
+        status:
+          $ref: "#/components/schemas/LessonStatus"
+
+    TrainingPlanStatus:
+      type: string
+      description: |
+        Статус плана обучения:
+        Draft — создан;
+        Proposed — предложен ученику;
+        Approved — согласован учеником;
+        Completed — обучение завершено.
+      enum:
+        - Draft
+        - Proposed
+        - Approved
+        - Completed
+      example: Draft
+
+    LessonType:
+      type: string
+      description: Тип занятия
+      enum:
+        - Theory
+        - Practice
+      example: Theory
+
+    LessonStatus:
+      type: string
+      description: |
+        Статус занятия:
+        Planned — запланировано;
+        Completed — проведено;
+        Cancelled — отменено.
+      enum:
+        - Planned
+        - Completed
+        - Cancelled
+      example: Planned
+
+    Error:
+      type: object
+      description: Ошибка выполнения запроса
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "План обучения не найден"

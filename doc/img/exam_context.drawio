@@ -1,0 +1,43 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Страница — 1" id="MTPTDKHH28zO37qQPdf6">
+    <mxGraphModel dx="662" dy="411" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-1" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="230" width="810" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-2" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Aggregate Root&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;ExamApplication&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ examApplicationId: UUID&lt;br&gt;+ studentId:&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;UUID&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ examDate: Date&lt;br&gt;+ examType: ExamType&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 4px;&quot;&gt;+ status:&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;ExamApplicationStatus&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 4px;&quot;&gt;+ result: ExamResultStatus&lt;br&gt;+ createdAt: DateTime&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="550" y="210" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-3" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;ExamType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Theory&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Practice&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="320" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-4" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;ExamApplicationStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Created&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;SentToGAI&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Completed&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="560" y="500" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-5" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;ExamResultStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;NotSet&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Passed&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Failed&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="780" y="310" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-6" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Hf1IRaVqS-fjMBrKc-xs-2" target="Hf1IRaVqS-fjMBrKc-xs-4">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="607" y="470" as="sourcePoint" />
+            <mxPoint x="657" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-7" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="Hf1IRaVqS-fjMBrKc-xs-2" target="Hf1IRaVqS-fjMBrKc-xs-5">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="670" y="470" as="sourcePoint" />
+            <mxPoint x="670" y="515" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hf1IRaVqS-fjMBrKc-xs-8" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="Hf1IRaVqS-fjMBrKc-xs-2" target="Hf1IRaVqS-fjMBrKc-xs-3">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="550" y="323" as="sourcePoint" />
+            <mxPoint x="841" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

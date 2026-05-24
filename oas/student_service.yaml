@@ -1,0 +1,276 @@
+openapi: "3.1.0"
+
+info:
+  title: Автошкола — Student Service
+  version: "0.1"
+  description: |
+    Сервис управления учениками автошколы.
+    Отвечает за регистрацию учеников, просмотр списка учеников
+    и изменение статуса обучения.
+
+servers:
+  - url: http://localhost:8081
+    description: Локальный сервер Student Service
+
+paths:
+  /students:
+    description: Ученики автошколы
+
+    get:
+      summary: Получение списка учеников
+      description: |
+        Получение списка зарегистрированных учеников.
+        Может использоваться администратором автошколы для контроля набора.
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Фильтрация учеников по статусу обучения
+          schema:
+            $ref: "#/components/schemas/StudentStatus"
+
+      responses:
+        "200":
+          description: Список учеников
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Регистрация ученика
+      description: |
+        Создание карточки нового ученика.
+        После регистрации ученик получает статус Registered.
+      requestBody:
+        description: Данные нового ученика
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentRequest"
+
+      responses:
+        "201":
+          description: Ученик зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+        "400":
+          description: Ошибка в логике запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /students/{studentId}:
+    description: Работа с конкретным учеником
+
+    parameters:
+      - name: studentId
+        in: path
+        required: true
+        description: Уникальный идентификатор ученика
+        schema:
+          type: string
+          format: uuid
+        example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+
+    get:
+      summary: Получение карточки ученика
+      description: |
+        Получение информации об ученике по его идентификатору.
+        Используется для просмотра текущего статуса обучения.
+      responses:
+        "200":
+          description: Карточка ученика
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+        "404":
+          description: Ученик не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /students/{studentId}/status:
+    description: Изменение статуса ученика
+
+    parameters:
+      - name: studentId
+        in: path
+        required: true
+        description: Уникальный идентификатор ученика
+        schema:
+          type: string
+          format: uuid
+        example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+
+    patch:
+      summary: Изменение статуса ученика
+      description: |
+        Изменение текущего статуса ученика.
+        Используется при начале обучения, завершении обучения,
+        допуске к экзамену и фиксации результата экзамена.
+      requestBody:
+        description: Новый статус ученика
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStudentStatusRequest"
+
+      responses:
+        "200":
+          description: Статус ученика изменён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+        "400":
+          description: Недопустимый статус
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: Ученик не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    CreateStudentRequest:
+      type: object
+      description: Данные для регистрации ученика
+      required:
+        - fullName
+        - phone
+        - email
+      properties:
+        fullName:
+          type: string
+          description: ФИО ученика
+          example: "Иванов Иван Иванович"
+        phone:
+          type: string
+          description: Номер телефона ученика
+          example: "+7 900 123-45-67"
+        email:
+          type: string
+          description: Электронная почта ученика
+          example: "ivanov@example.com"
+
+    UpdateStudentStatusRequest:
+      type: object
+      description: Запрос на изменение статуса ученика
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/StudentStatus"
+
+    Student:
+      type: object
+      description: Ученик автошколы
+      required:
+        - studentId
+        - fullName
+        - phone
+        - email
+        - status
+        - createdAt
+      properties:
+        studentId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор ученика
+          example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+        fullName:
+          type: string
+          description: ФИО ученика
+          example: "Иванов Иван Иванович"
+        phone:
+          type: string
+          description: Номер телефона ученика
+          example: "+7 900 123-45-67"
+        email:
+          type: string
+          description: Электронная почта ученика
+          example: "ivanov@example.com"
+        status:
+          $ref: "#/components/schemas/StudentStatus"
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время регистрации ученика
+          example: "2026-05-25T10:30:00Z"
+
+    StudentStatus:
+      type: string
+      description: |
+        Статус ученика:
+        Registered — зарегистрирован;
+        InTraining — проходит обучение;
+        TrainingCompleted — обучение завершено;
+        AdmittedToExam — допущен к экзамену;
+        ExamPassed — экзамен сдан;
+        ExamFailed — экзамен не сдан.
+      enum:
+        - Registered
+        - InTraining
+        - TrainingCompleted
+        - AdmittedToExam
+        - ExamPassed
+        - ExamFailed
+      example: Registered
+
+    Error:
+      type: object
+      description: Ошибка выполнения запроса
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Ученик не найден"

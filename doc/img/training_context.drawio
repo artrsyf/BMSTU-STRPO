@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Страница — 1" id="khJH6E7Zvq4f2kn0qUZ7">
+    <mxGraphModel dx="1144" dy="709" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-1" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="200" width="790" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-2" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Aggregate Root&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;TrainingPlan&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ trainingPlanId: UUID&lt;br&gt;+ studentId:&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;UUID&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ status: TrainingPlanStatus&lt;br&gt;+ createdAt: DateTime&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="180" width="190" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-3" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Entity&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;Lesson&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ lessonId: UUID&lt;br&gt;+ trainingPlanId:&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;UUID&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ lessonType: LessonType&lt;br&gt;+ startTime: DateTime&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 4px;&quot;&gt;+ endTime:&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;DateTime&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 4px;&quot;&gt;+ instructorName: string&lt;br&gt;+ status: LessonStatus&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="360" width="190" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-4" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;TrainingPlanStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Draft&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Proposed&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Approved&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Completed&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="190" y="270" width="190" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-5" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;LessonType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Theory&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Practice&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="640" y="375" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-6" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;LessonStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Planned&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Completed&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;Cancelled&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="170" y="398" width="190" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-7" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="3-GfKW2cFQf89kMqkNo0-3" target="3-GfKW2cFQf89kMqkNo0-2">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="650" y="230" as="sourcePoint" />
+            <mxPoint x="810" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-8" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="3-GfKW2cFQf89kMqkNo0-2" target="3-GfKW2cFQf89kMqkNo0-4">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="770" y="180" as="sourcePoint" />
+            <mxPoint x="190" y="353" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-9" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="3-GfKW2cFQf89kMqkNo0-3" target="3-GfKW2cFQf89kMqkNo0-5">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="610" y="440" as="sourcePoint" />
+            <mxPoint x="660" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-10" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="3-GfKW2cFQf89kMqkNo0-3" target="3-GfKW2cFQf89kMqkNo0-6">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="630" y="450" as="sourcePoint" />
+            <mxPoint x="680" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-11" value="1..n" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="330" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3-GfKW2cFQf89kMqkNo0-12" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="290" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

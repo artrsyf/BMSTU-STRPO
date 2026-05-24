@@ -1,0 +1,342 @@
+openapi: "3.1.0"
+
+info:
+  title: Автошкола — Exam Service
+  version: "0.1"
+  description: |
+    Сервис управления экзаменами.
+    Отвечает за создание заявки на экзамен, отправку заявки в ГАИ
+    и фиксацию результата экзамена.
+
+servers:
+  - url: http://localhost:8083
+    description: Локальный сервер Exam Service
+
+paths:
+  /exam-applications:
+    description: Заявки на экзамен
+
+    get:
+      summary: Получение списка заявок на экзамен
+      parameters:
+        - name: studentId
+          in: query
+          required: false
+          description: Идентификатор ученика
+          schema:
+            type: string
+            format: uuid
+
+        - name: status
+          in: query
+          required: false
+          description: Статус заявки на экзамен
+          schema:
+            $ref: "#/components/schemas/ExamApplicationStatus"
+
+      responses:
+        "200":
+          description: Список заявок на экзамен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExamApplication"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Создание заявки на экзамен
+      description: |
+        Создание заявки на экзамен для ученика, завершившего обучение.
+        В MVP заявка создаётся на основании studentId и выбранного типа экзамена.
+      requestBody:
+        required: true
+        description: Данные для создания заявки на экзамен
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExamApplicationRequest"
+
+      responses:
+        "201":
+          description: Заявка на экзамен создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamApplication"
+
+        "400":
+          description: Ошибка в логике запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /exam-applications/{examApplicationId}:
+    description: Работа с конкретной заявкой на экзамен
+
+    parameters:
+      - name: examApplicationId
+        in: path
+        required: true
+        description: Уникальный идентификатор заявки на экзамен
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Получение заявки на экзамен
+      description: |
+        Получение информации о конкретной заявке на экзамен.
+      responses:
+        "200":
+          description: Заявка на экзамен найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamApplication"
+
+        "404":
+          description: Заявка на экзамен не найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /exam-applications/{examApplicationId}/send-to-gai:
+    description: Отправка заявки в ГАИ
+
+    parameters:
+      - name: examApplicationId
+        in: path
+        required: true
+        description: Уникальный идентификатор заявки на экзамен
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Отметка заявки как отправленной в ГАИ
+      description: |
+        Изменение статуса заявки на SentToGAI.
+        В MVP реальная интеграция с ГАИ не выполняется,
+        но сохраняется архитектурная граница для ACL.
+      responses:
+        "200":
+          description: Заявка отправлена в ГАИ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamApplication"
+
+        "400":
+          description: Заявка не может быть отправлена в ГАИ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: Заявка на экзамен не найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /exam-applications/{examApplicationId}/result:
+    description: Фиксация результата экзамена
+
+    parameters:
+      - name: examApplicationId
+        in: path
+        required: true
+        description: Уникальный идентификатор заявки на экзамен
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      summary: Фиксация результата экзамена
+      description: |
+        Сохранение результата экзамена ученика.
+        После фиксации результата заявка получает статус Completed.
+      requestBody:
+        required: true
+        description: Результат экзамена
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetExamResultRequest"
+
+      responses:
+        "200":
+          description: Результат экзамена сохранён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamApplication"
+
+        "400":
+          description: Недопустимый результат экзамена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "404":
+          description: Заявка на экзамен не найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Ошибка сервиса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    CreateExamApplicationRequest:
+      type: object
+      description: Данные для создания заявки на экзамен
+      required:
+        - studentId
+        - examDate
+        - examType
+      properties:
+        studentId:
+          type: string
+          format: uuid
+          description: Идентификатор ученика из Student Service
+          example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+        examDate:
+          type: string
+          format: date
+          description: Дата экзамена
+          example: "2026-06-15"
+        examType:
+          $ref: "#/components/schemas/ExamType"
+
+    SetExamResultRequest:
+      type: object
+      description: Данные для фиксации результата экзамена
+      required:
+        - result
+      properties:
+        result:
+          $ref: "#/components/schemas/ExamResultStatus"
+
+    ExamApplication:
+      type: object
+      description: Заявка на экзамен
+      required:
+        - examApplicationId
+        - studentId
+        - examDate
+        - examType
+        - status
+        - result
+        - createdAt
+      properties:
+        examApplicationId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор заявки на экзамен
+          example: "1b2c3d4e-5f60-47a8-9b10-112233445566"
+        studentId:
+          type: string
+          format: uuid
+          description: Идентификатор ученика
+          example: "7f3a6d2a-5f8b-4b2e-9c2f-1a2b3c4d5e6f"
+        examDate:
+          type: string
+          format: date
+          description: Дата экзамена
+          example: "2026-06-15"
+        examType:
+          $ref: "#/components/schemas/ExamType"
+        status:
+          $ref: "#/components/schemas/ExamApplicationStatus"
+        result:
+          $ref: "#/components/schemas/ExamResultStatus"
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время создания заявки
+          example: "2026-05-25T10:30:00Z"
+
+    ExamType:
+      type: string
+      description: Тип экзамена
+      enum:
+        - Theory
+        - Practice
+      example: Theory
+
+    ExamApplicationStatus:
+      type: string
+      description: |
+        Статус заявки:
+        Created — заявка создана;
+        SentToGAI — заявка отправлена в ГАИ;
+        Completed — экзамен завершён.
+      enum:
+        - Created
+        - SentToGAI
+        - Completed
+      example: Created
+
+    ExamResultStatus:
+      type: string
+      description: |
+        Результат экзамена:
+        NotSet — результат ещё не указан;
+        Passed — экзамен сдан;
+        Failed — экзамен не сдан.
+      enum:
+        - NotSet
+        - Passed
+        - Failed
+      example: NotSet
+
+    Error:
+      type: object
+      description: Ошибка выполнения запроса
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Заявка на экзамен не найдена"
