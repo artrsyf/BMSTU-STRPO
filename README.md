@@ -524,3 +524,46 @@ sh test/98-smoke-check
 sh test/99-demo-flow
 docker rm -f drivingschool-simodo-local
 ```
+
+## Makefile
+
+Основные команды вынесены в `Makefile`.
+
+Локальный запуск:
+
+```bash
+make run
+```
+
+Локальные тесты одной командой:
+
+```bash
+make test
+```
+
+Эта команда собирает Docker-образ, проверяет синтаксис всех `.s-script`,
+перезапускает локальный контейнер и прогоняет smoke-сценарий.
+
+Продовый demo-сценарий:
+
+```bash
+make prod-demo
+```
+
+Продовый smoke-check:
+
+```bash
+make prod-test
+```
+
+По умолчанию prod-команды используют:
+
+```text
+http://185.221.215.236:2021/driving
+```
+
+Адрес можно переопределить:
+
+```bash
+make prod-test PROD_BASE_URL=http://<SERVER_IP>:2021/driving
+```

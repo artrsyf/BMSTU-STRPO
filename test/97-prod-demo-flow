@@ -1,0 +1,143 @@
+#!/usr/bin/env sh
+set -eu
+
+BASE_URL="${BASE_URL:-http://185.221.215.236:2021/driving}"
+ROOT="${ROOT:-$(pwd)}"
+RUN_ID="${RUN_ID:-$(date +%s)}"
+TMP_DIR="${TMP_DIR:-/tmp/drivingschool-prod-$RUN_ID}"
+
+mkdir -p "$TMP_DIR"
+
+extract_json_string()
+{
+  sed -n "s/.*\"$1\":\"\\([^\"]*\\)\".*/\\1/p" "$2" | tail -1
+}
+
+request()
+{
+  title="$1"
+  shift
+
+  echo "### $title"
+  curl -i -s --connect-timeout 10 --max-time 20 "$@"
+  echo
+}
+
+capture()
+{
+  title="$1"
+  out="$2"
+  shift 2
+
+  echo "### $title"
+  curl -i -s --connect-timeout 10 --max-time 20 "$@" | tee "$out"
+  echo
+}
+
+cat > "$TMP_DIR/student-create.json" <<EOF
+{"fullName":"Prod Smoke Student $RUN_ID","phone":"+7900$RUN_ID","email":"prod-smoke-$RUN_ID@example.com"}
+EOF
+
+echo "### Prod base URL"
+echo "$BASE_URL"
+echo
+
+request "List students" "$BASE_URL/students"
+request "List training plans" "$BASE_URL/training-plans"
+request "List exam applications" "$BASE_URL/exam-applications"
+
+capture "Create student" "$TMP_DIR/student.out" \
+  -X POST "$BASE_URL/students" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/student-create.json"
+
+STUDENT_ID="$(extract_json_string studentId "$TMP_DIR/student.out")"
+test -n "$STUDENT_ID"
+
+cat > "$TMP_DIR/student-status-in-training.json" <<EOF
+{"status":"InTraining"}
+EOF
+
+cat > "$TMP_DIR/student-status-training-completed.json" <<EOF
+{"status":"TrainingCompleted"}
+EOF
+
+cat > "$TMP_DIR/student-status-exam-passed.json" <<EOF
+{"status":"ExamPassed"}
+EOF
+
+cat > "$TMP_DIR/training-plan-create.json" <<EOF
+{"studentId":"$STUDENT_ID"}
+EOF
+
+cat > "$TMP_DIR/exam-application-create.json" <<EOF
+{"studentId":"$STUDENT_ID","examDate":"2026-06-15","examType":"Theory"}
+EOF
+
+cat > "$TMP_DIR/exam-result-passed.json" <<EOF
+{"result":"Passed"}
+EOF
+
+request "Get student" "$BASE_URL/students/$STUDENT_ID"
+
+request "Mark student as InTraining" \
+  -X PATCH "$BASE_URL/students/$STUDENT_ID/status" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/student-status-in-training.json"
+
+capture "Create training plan" "$TMP_DIR/training-plan.out" \
+  -X POST "$BASE_URL/training-plans" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/training-plan-create.json"
+
+TRAINING_PLAN_ID="$(extract_json_string trainingPlanId "$TMP_DIR/training-plan.out")"
+test -n "$TRAINING_PLAN_ID"
+
+capture "Add lesson" "$TMP_DIR/lesson.out" \
+  -X POST "$BASE_URL/training-plans/$TRAINING_PLAN_ID/lessons" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/lesson-theory-create.json"
+
+LESSON_ID="$(extract_json_string lessonId "$TMP_DIR/lesson.out")"
+test -n "$LESSON_ID"
+
+request "Try to complete plan before lesson completion, expect HTTP 400" \
+  -X PATCH "$BASE_URL/training-plans/$TRAINING_PLAN_ID/complete"
+
+request "Complete lesson" \
+  -X PATCH "$BASE_URL/lessons/$LESSON_ID/complete"
+
+request "Complete training plan" \
+  -X PATCH "$BASE_URL/training-plans/$TRAINING_PLAN_ID/complete"
+
+request "Mark student training completed" \
+  -X PATCH "$BASE_URL/students/$STUDENT_ID/status" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/student-status-training-completed.json"
+
+capture "Create exam application" "$TMP_DIR/exam-application.out" \
+  -X POST "$BASE_URL/exam-applications" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/exam-application-create.json"
+
+EXAM_APPLICATION_ID="$(extract_json_string examApplicationId "$TMP_DIR/exam-application.out")"
+test -n "$EXAM_APPLICATION_ID"
+
+request "Get exam application" "$BASE_URL/exam-applications/$EXAM_APPLICATION_ID"
+
+request "Send exam application to GAI" \
+  -X PATCH "$BASE_URL/exam-applications/$EXAM_APPLICATION_ID/send-to-gai"
+
+request "Set exam result" \
+  -X PATCH "$BASE_URL/exam-applications/$EXAM_APPLICATION_ID/result" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/exam-result-passed.json"
+
+request "Mark student exam passed" \
+  -X PATCH "$BASE_URL/students/$STUDENT_ID/status" \
+  -H "Content-Type: application/json" \
+  --data-binary "@$TMP_DIR/student-status-exam-passed.json"
+
+request "Final student state" "$BASE_URL/students/$STUDENT_ID"
+request "Final training plan state" "$BASE_URL/training-plans/$TRAINING_PLAN_ID"
+request "Final exam application state" "$BASE_URL/exam-applications/$EXAM_APPLICATION_ID"
