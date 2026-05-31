@@ -1,4 +1,5 @@
 import "//http/response.s-script" : s
+import "-interfaces.s-script" : i
 import "-base-setup.s-script" : base_setup
 import "//http/base.s-script" :
     base = {
@@ -13,7 +14,7 @@ fn add(any : body) -> any
     if body["studentId"] == null
         return s.makeResponse({ message : "studentId is required" }, s.status.bad_request)
 
-    auto : plan = {
+    i.TrainingPlan : plan = {
         trainingPlanId : "",
         studentId      : body.studentId,
         status         : "Draft",
@@ -49,7 +50,7 @@ fn addLesson(string : training_plan_id, any : body) -> any
             if e.value.status == "Completed"
                 return s.makeResponse({ message : "Completed plan cannot be changed" }, s.status.bad_request)
 
-            auto : lesson = {
+            i.Lesson : lesson = {
                 lessonId       : training_plan_id + "-lesson-" + e.value.lessons.size,
                 trainingPlanId : training_plan_id,
                 lessonType     : body.lessonType,

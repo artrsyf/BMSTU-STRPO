@@ -1,0 +1,8 @@
+auto type Student = {
+    studentId : string_undef,
+    fullName  : string_undef,
+    phone     : string_undef,
+    email     : string_undef,
+    status    : "Registered",
+    createdAt : string_undef,
+}

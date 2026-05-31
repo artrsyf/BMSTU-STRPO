@@ -1,4 +1,5 @@
 import "//http/response.s-script" : s
+import "-interfaces.s-script" : i
 import "-base-setup.s-script" : base_setup
 import "//http/base.s-script" :
     base = {
@@ -22,7 +23,7 @@ fn add(any : body) -> any
         if e.value.email == body.email
             return s.makeResponse({ message : "Student with this email already exists" }, s.status.bad_request)
 
-    auto : student = {
+    i.Student : student = {
         studentId : "",
         fullName  : body.fullName,
         phone     : body.phone,

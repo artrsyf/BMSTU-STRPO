@@ -1,0 +1,9 @@
+auto type ExamApplication = {
+    examApplicationId : string_undef,
+    studentId          : string_undef,
+    examDate           : string_undef,
+    examType           : string_undef,
+    status             : "Created",
+    result             : "NotSet",
+    createdAt          : string_undef,
+}

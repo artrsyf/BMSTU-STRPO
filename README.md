@@ -71,6 +71,16 @@ const int :
     port = 2022
 ```
 
+Контракты основных объектов вынесены в файлы интерфейсов:
+
+- `src/students/-interfaces.s-script` - `Student`;
+- `src/training-plans/-interfaces.s-script` - `TrainingPlan`, `Lesson`;
+- `src/exam-applications/-interfaces.s-script` - `ExamApplication`.
+
+Они используют встроенные SIMODO-значения вроде `string_undef`, чтобы явно
+зафиксировать обязательные строковые поля и сохранить стиль, аналогичный
+референсному проекту `vortex`.
+
 Важно: `localhost` здесь означает не Windows-хост и не WSL-хост, а сетевое
 пространство контейнера, внутри которого запущены `station` и `base`.
 

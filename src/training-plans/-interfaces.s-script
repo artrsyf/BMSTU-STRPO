@@ -1,0 +1,17 @@
+auto type TrainingPlan = {
+    trainingPlanId : string_undef,
+    studentId      : string_undef,
+    status         : "Draft",
+    lessons        : [],
+    createdAt      : string_undef,
+}
+
+auto type Lesson = {
+    lessonId       : string_undef,
+    trainingPlanId : string_undef,
+    lessonType     : string_undef,
+    startTime      : string_undef,
+    endTime        : string_undef,
+    instructorName : string_undef,
+    status         : "Planned",
+}
