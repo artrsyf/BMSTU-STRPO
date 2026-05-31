@@ -50,3 +50,34 @@ pages:
   only:
     - main
     - master
+
+deploy:
+  image: alpine:latest
+  stage: delivery
+  needs:
+    - job: testing
+  before_script: []
+  script:
+    - apk --update add openssh-client rsync curl
+    - test -n "$SERVER_IP" || { echo "SERVER_IP is not available in this job"; exit 1; }
+    - test -n "$SSH_PRIVATE_KEY" || { echo "SSH_PRIVATE_KEY is not available in this job"; exit 1; }
+    - DEPLOY_USER="${DEPLOY_USER:-driving}"
+    - DEPLOY_MODULE_PATH="${DEPLOY_MODULE_PATH:-/root/simodo-stellar/modules/driving/}"
+    - PUBLIC_BASE_URL="${PUBLIC_BASE_URL:-http://$SERVER_IP/driving}"
+    - echo "Deploying to $DEPLOY_USER@$SERVER_IP:$DEPLOY_MODULE_PATH"
+    - mkdir -m 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - if test -f "$SSH_PRIVATE_KEY"; then cp "$SSH_PRIVATE_KEY" ~/.ssh/deploy_key; else printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key; fi
+    - chmod 600 ~/.ssh/deploy_key
+    - ssh-add ~/.ssh/deploy_key
+    - ssh-add -l -E sha256
+    - ssh-keyscan -H "$SERVER_IP" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$DEPLOY_USER@$SERVER_IP" "mkdir -p '$DEPLOY_MODULE_PATH'"
+    - rsync -a -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" --delete --exclude='.git' --exclude='demo.out' --exclude='simodo.log' --exclude='index.html' --exclude='public' ./ "$DEPLOY_USER@$SERVER_IP:$DEPLOY_MODULE_PATH"
+    - ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$DEPLOY_USER@$SERVER_IP" "/root/simodo-stellar/restart_docker.sh"
+    - sleep 5
+    - curl -fsS "$PUBLIC_BASE_URL/students"
+  only:
+    - main
+    - master

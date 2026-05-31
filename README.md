@@ -435,6 +435,47 @@ sh test/98-smoke-check
 вынесен отдельно в `test/00-run-ci`, чтобы не зависеть от Docker daemon внутри
 GitLab runner.
 
+### Автоматический deploy
+
+После успешных тестов CI автоматически запускает job `deploy`. Она копирует
+текущий проект на SIMODO deploy-хост через SSH/rsync и затем вызывает удаленный
+скрипт перезапуска:
+
+```bash
+/root/simodo-stellar/restart_docker.sh
+```
+
+По умолчанию проект раскладывается в модуль:
+
+```text
+/root/simodo-stellar/modules/driving/
+```
+
+Ожидаемый публичный адрес после развертывания:
+
+```text
+http://<SERVER_IP>/Driving/...
+```
+
+Для deploy в GitLab CI/CD Variables должны быть заданы:
+
+- `SERVER_IP` - IP или DNS deploy-хоста;
+- `SSH_PRIVATE_KEY` - приватный SSH-ключ для подключения;
+- `DEPLOY_USER` - опционально, по умолчанию `driving`;
+- `DEPLOY_MODULE_PATH` - опционально, по умолчанию
+  `/root/simodo-stellar/modules/driving/`;
+- `PUBLIC_BASE_URL` - опционально, по умолчанию
+  `http://$SERVER_IP/driving`.
+
+Перед копированием job исключает локальные/CI-артефакты: `.git`, `demo.out`,
+`simodo.log`, `index.html`, `public`.
+
+После перезапуска deploy job проверяет доступность:
+
+```bash
+curl -fsS "$PUBLIC_BASE_URL/students"
+```
+
 ## Модель id
 
 В OpenAPI публичные идентификаторы описаны как UUID strings. Внутри
