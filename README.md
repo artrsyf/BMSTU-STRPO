@@ -397,25 +397,33 @@ basic_ios::clear: iostream error
 
 CI описан в `.gitlab-ci.yml`.
 
-Пайплайн использует `docker:27` и `docker:27-dind`, устанавливает `curl`,
-поднимает локальный контейнер и прогоняет smoke-сценарий:
+Пайплайн не использует Docker-in-Docker. Это важно: на текущем GitLab runner
+`docker:dind` не стартует без privileged-доступа, из-за чего Docker daemon
+недоступен на `docker:2375`.
+
+Вместо этого CI использует образ `alt:p10`, подключает RPM-репозиторий SIMODO,
+ставит `simodo-loom`, `simodo-loom-stellar` и `curl`, а затем запускает
+`simodo-stellar-base` и три `simodo-stellar-station` прямо внутри job container.
+
+Команды проверки:
 
 ```bash
-sh test/00-run-local
+sh test/00-run-ci
 sh test/98-smoke-check
 ```
 
 После выполнения сохраняются artifacts:
 
 - `demo.out` - полный вывод demo-flow;
-- `docker.log` - лог контейнера;
-- `simodo.log` - логи `base`, `students`, `training`, `exams`.
+- `simodo.log` - логи `base`, `students`, `training`, `exams`;
+- `index.html` - копия логов для быстрой публикации/просмотра.
 
 Также есть job `pages`, который публикует `demo.out` как простую HTML-страницу
-на ветке `main`.
+на ветках `main` и `master`.
 
-Важно: runner должен поддерживать privileged Docker-in-Docker. Без этого
-контейнер с SIMODO не сможет стартовать внутри CI.
+Локальный Docker-запуск при этом остается в `test/00-run-local`; CI-запуск
+вынесен отдельно в `test/00-run-ci`, чтобы не зависеть от Docker daemon внутри
+GitLab runner.
 
 ## Модель id
 

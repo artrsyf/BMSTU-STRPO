@@ -1,40 +1,38 @@
-image: docker:27
-
-services:
-  - name: docker:27-dind
-    command: ["--tls=false"]
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_DRIVER: overlay2
+image: alt:p10
 
 stages:
   - test
   - delivery
 
 before_script:
-  - apk add --no-cache curl
-  - docker info
+  - apt-get -y update
+  - export DEBIAN_FRONTEND=noninteractive
+  - export TZ=Europe/Moscow
+  - echo 'rpm http://simodo.ru/packages/rpm/alt/p10/repo x86_64 hasher' > /etc/apt/sources.list.d/simodo.list
+  - apt-get -y update
+  - apt-get -y install curl simodo-loom simodo-loom-stellar
 
 testing:
   stage: test
   script:
-    - chmod +x test/00-run-local test/01-student-flow test/02-training-flow test/03-exam-flow test/98-smoke-check test/99-demo-flow
-    - sh test/00-run-local
+    - chmod +x test/00-run-ci test/01-student-flow test/02-training-flow test/03-exam-flow test/98-smoke-check test/99-demo-flow
+    - sh test/00-run-ci
     - sh test/98-smoke-check
-    - docker logs drivingschool-simodo-local > docker.log 2>&1 || true
-    - docker exec drivingschool-simodo-local sh -lc 'cat /tmp/base.log /tmp/students.log /tmp/training.log /tmp/exams.log' > simodo.log 2>&1 || true
-    - cp /tmp/drivingschool-demo.out demo.out
   after_script:
-    - docker rm -f drivingschool-simodo-local || true
+    - test -f /tmp/drivingschool-demo.out && cp /tmp/drivingschool-demo.out demo.out || true
+    - cat /tmp/base.log /tmp/students.log /tmp/training.log /tmp/exams.log > simodo.log 2>&1 || true
+    - cp simodo.log index.html || true
+    - pkill -f simodo-stellar || true
   artifacts:
     when: always
     paths:
       - demo.out
-      - docker.log
       - simodo.log
+      - index.html
     expire_in: 30 minutes
+  only:
+    - main
+    - master
 
 pages:
   stage: delivery
@@ -51,3 +49,4 @@ pages:
       - public
   only:
     - main
+    - master

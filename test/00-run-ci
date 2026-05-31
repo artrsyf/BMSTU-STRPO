@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT="${CI_PROJECT_DIR:-$(pwd)}"
+
+mkdir -p /tmp/simodo/bin \
+  /tmp/simodo/data/stellar \
+  /tmp/simodo/data/contracts \
+  /tmp/simodo/tmp/logs/work \
+  /tmp/simodo/tmp/logs \
+  /tmp/simodo/db
+
+cp /etc/xdg/simodo/stellar/base-setup.json /tmp/simodo/data/stellar/base-setup.json
+cp /etc/xdg/simodo/stellar/station-setup.json /tmp/simodo/data/stellar/station-setup.json
+cp /usr/share/simodo/contracts/initial-contracts.s-script /tmp/simodo/data/contracts/initial-contracts.s-script
+
+cd /tmp/simodo/bin
+
+simodo-stellar-base 2022 /tmp/simodo/db >/tmp/base.log 2>&1 &
+simodo-stellar-station 8081 "$ROOT/src" >/tmp/students.log 2>&1 &
+simodo-stellar-station 8082 "$ROOT/src" >/tmp/training.log 2>&1 &
+simodo-stellar-station 8083 "$ROOT/src" >/tmp/exams.log 2>&1 &
+
+sleep 3
+ps aux | grep simodo-stellar | grep -v grep
