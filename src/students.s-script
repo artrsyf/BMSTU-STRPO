@@ -2,6 +2,10 @@ import "//http/request.s-script" : s
 import "//http/response.s-script" : r
 
 auto : path = s.path.slice(1).split("/")
+int : offset = 0
+
+if path.size > 0 && path[0] == "driving"
+    offset = 1
 
 if s.method == "POST" {
     import "students/add.s-script" : students
@@ -10,16 +14,16 @@ if s.method == "POST" {
 }
 else if s.method == "GET" {
     import "students/get.s-script" : students
-    s.a.value = students.get(path.size > 1 ? path[1] : "", s.params)
+    s.a.value = students.get(path.size > offset + 1 ? path[offset + 1] : "", s.params)
     await s.a.resume(true)
 }
 else if s.method == "PATCH" {
     import "students/patch.s-script" : students
 
-    if path.size < 3 || path[2] != "status"
+    if path.size < offset + 3 || path[offset + 2] != "status"
         s.a.value = r.makeResponse({ message : "Unsupported student operation" }, r.status.bad_request)
     else
-        s.a.value = students.patchStatus(path[1], s.body)
+        s.a.value = students.patchStatus(path[offset + 1], s.body)
 
     await s.a.resume(true)
 }

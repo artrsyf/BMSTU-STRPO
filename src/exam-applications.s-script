@@ -2,6 +2,10 @@ import "//http/request.s-script" : s
 import "//http/response.s-script" : r
 
 auto : path = s.path.slice(1).split("/")
+int : offset = 0
+
+if path.size > 0 && path[0] == "driving"
+    offset = 1
 
 if s.method == "POST" {
     import "exam-applications/add.s-script" : apps
@@ -10,16 +14,16 @@ if s.method == "POST" {
 }
 else if s.method == "GET" {
     import "exam-applications/get.s-script" : apps
-    s.a.value = apps.get(path.size > 1 ? path[1] : "", s.params)
+    s.a.value = apps.get(path.size > offset + 1 ? path[offset + 1] : "", s.params)
     await s.a.resume(true)
 }
 else if s.method == "PATCH" {
     import "exam-applications/patch.s-script" : apps
 
-    if path.size == 3 && path[2] == "send-to-gai"
-        s.a.value = apps.sendToGai(path[1])
-    else if path.size == 3 && path[2] == "result"
-        s.a.value = apps.setResult(path[1], s.body)
+    if path.size == offset + 3 && path[offset + 2] == "send-to-gai"
+        s.a.value = apps.sendToGai(path[offset + 1])
+    else if path.size == offset + 3 && path[offset + 2] == "result"
+        s.a.value = apps.setResult(path[offset + 1], s.body)
     else
         s.a.value = r.makeResponse({ message : "Unsupported exam application operation" }, r.status.bad_request)
 

@@ -12,10 +12,10 @@ fn get(string : student_id = "", any : params) -> any
 {
     auto : res = base.getAll()
 
-    if res == null
-        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
-
     if student_id != "" {
+        if res == null
+            return s.makeResponse({ message : "Student not found" }, 404)
+
         for auto : e in res
             if e.value.studentId == student_id
                 return s.makeResponse(e.value)
@@ -25,6 +25,9 @@ fn get(string : student_id = "", any : params) -> any
 
     string : status = params["status"] == null ? "" : params["status"]
     auto : filtered = []
+
+    if res == null
+        return s.makeResponse(filtered)
 
     for auto : e in res
         if status == "" || e.value.status == status

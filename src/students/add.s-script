@@ -17,7 +17,7 @@ fn add(any : body) -> any
     auto : existing = base.getAll()
 
     if existing == null
-        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+        existing = []
 
     for auto : e in existing
         if e.value.email == body.email

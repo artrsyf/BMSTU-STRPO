@@ -2,10 +2,14 @@ import "//http/request.s-script" : s
 import "//http/response.s-script" : r
 
 auto : path = s.path.slice(1).split("/")
+int : offset = 0
 
-if s.method == "PATCH" && path.size == 3 && path[2] == "complete" {
+if path.size > 0 && path[0] == "driving"
+    offset = 1
+
+if s.method == "PATCH" && path.size == offset + 3 && path[offset + 2] == "complete" {
     import "training-plans/patch.s-script" : plans
-    s.a.value = plans.completeLesson(path[1])
+    s.a.value = plans.completeLesson(path[offset + 1])
     await s.a.resume(true)
 }
 else {
