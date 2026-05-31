@@ -1,0 +1,45 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn add(any : body) -> any
+{
+    if body["fullName"] == null || body["phone"] == null || body["email"] == null
+        return s.makeResponse({ message : "fullName, phone and email are required" }, s.status.bad_request)
+
+    auto : existing = base.getAll()
+
+    if existing == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in existing
+        if e.value.email == body.email
+            return s.makeResponse({ message : "Student with this email already exists" }, s.status.bad_request)
+
+    auto : student = {
+        studentId : "",
+        fullName  : body.fullName,
+        phone     : body.phone,
+        email     : body.email,
+        status    : "Registered",
+        createdAt : "2026-05-31T00:00:00Z",
+    }
+
+    int : id = base.add(student)
+
+    if id < 0
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    student.studentId = "student-" + id
+
+    if !base.update(id, student)
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    return s.makeResponse(student, s.status.created)
+}

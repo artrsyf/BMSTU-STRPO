@@ -1,0 +1,59 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn sendToGai(string : application_id) -> any
+{
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res
+        if e.value.examApplicationId == application_id {
+            if e.value.status != "Created"
+                return s.makeResponse({ message : "Only created application can be sent to GAI" }, s.status.bad_request)
+
+            e.value.status = "SentToGAI"
+
+            if !base.update(e.id, e.value)
+                return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+            return s.makeResponse(e.value)
+        }
+
+    return s.makeResponse({ message : "Exam application not found" }, 404)
+}
+
+fn setResult(string : application_id, any : body) -> any
+{
+    if body["result"] == null
+        return s.makeResponse({ message : "result is required" }, s.status.bad_request)
+
+    if body.result != "Passed" && body.result != "Failed"
+        return s.makeResponse({ message : "Invalid exam result" }, s.status.bad_request)
+
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res
+        if e.value.examApplicationId == application_id {
+            e.value.result = body.result
+            e.value.status = "Completed"
+
+            if !base.update(e.id, e.value)
+                return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+            return s.makeResponse(e.value)
+        }
+
+    return s.makeResponse({ message : "Exam application not found" }, 404)
+}

@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT="${ROOT:-$(pwd)}"
+OUT="${OUT:-/tmp/drivingschool-demo.out}"
+
+sh "$ROOT/test/99-demo-flow" > "$OUT"
+
+grep -q "HTTP/1.1 201 Created" "$OUT"
+grep -q "HTTP/1.1 400 Bad Request" "$OUT"
+grep -q '"studentId":"student-0"' "$OUT"
+grep -q '"trainingPlanId":"training-plan-0"' "$OUT"
+grep -q '"lessonId":"training-plan-0-lesson-0"' "$OUT"
+grep -q '"examApplicationId":"exam-application-0"' "$OUT"
+grep -q '"status":"ExamPassed"' "$OUT"
+grep -q '"status":"Completed"' "$OUT"
+grep -q '"result":"Passed"' "$OUT"
+grep -q 'All lessons must be completed before training plan completion' "$OUT"
+
+echo "Smoke check passed. Captured output: $OUT"

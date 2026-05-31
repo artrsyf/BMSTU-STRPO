@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT="${ROOT:-$(pwd)}"
+export ROOT
+
+sh "$ROOT/test/01-student-flow"
+sh "$ROOT/test/02-training-flow"
+sh "$ROOT/test/03-exam-flow"
+
+echo "### Final students state"
+curl -i -s http://localhost:8081/students
+echo
+
+echo "### Final training plans state"
+curl -i -s http://localhost:8082/training-plans
+echo
+
+echo "### Final exam applications state"
+curl -i -s http://localhost:8083/exam-applications
+echo

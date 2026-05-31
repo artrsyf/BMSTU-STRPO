@@ -1,0 +1,74 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn approve(string : training_plan_id) -> any
+{
+    return setPlanStatus(training_plan_id, "Approved")
+}
+
+fn complete(string : training_plan_id) -> any
+{
+    return setPlanStatus(training_plan_id, "Completed")
+}
+
+fn setPlanStatus(string : training_plan_id, string : status) -> any
+{
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res
+        if e.value.trainingPlanId == training_plan_id {
+            if status == "Completed" && e.value.lessons.size == 0
+                return s.makeResponse({ message : "Training plan has no lessons" }, s.status.bad_request)
+
+            if status == "Completed"
+                for auto : lesson in e.value.lessons
+                    if lesson.status != "Completed"
+                        return s.makeResponse({ message : "All lessons must be completed before training plan completion" }, s.status.bad_request)
+
+            e.value.status = status
+
+            if !base.update(e.id, e.value)
+                return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+            return s.makeResponse(e.value)
+        }
+
+    return s.makeResponse({ message : "Training plan not found" }, 404)
+}
+
+fn completeLesson(string : lesson_id) -> any
+{
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res {
+        int : lesson_index = 0
+
+        for auto : lesson in e.value.lessons {
+            if lesson.lessonId == lesson_id {
+                e.value.lessons[lesson_index].status = "Completed"
+
+                if !base.update(e.id, e.value)
+                    return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+                return s.makeResponse(e.value.lessons[lesson_index])
+            }
+
+            lesson_index += 1
+        }
+    }
+
+    return s.makeResponse({ message : "Lesson not found" }, 404)
+}

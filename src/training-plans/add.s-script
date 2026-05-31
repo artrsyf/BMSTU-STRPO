@@ -1,0 +1,72 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn add(any : body) -> any
+{
+    if body["studentId"] == null
+        return s.makeResponse({ message : "studentId is required" }, s.status.bad_request)
+
+    auto : plan = {
+        trainingPlanId : "",
+        studentId      : body.studentId,
+        status         : "Draft",
+        lessons        : [],
+        createdAt      : "2026-05-31T00:00:00Z",
+    }
+
+    int : id = base.add(plan)
+
+    if id < 0
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    plan.trainingPlanId = "training-plan-" + id
+
+    if !base.update(id, plan)
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    return s.makeResponse(plan, s.status.created)
+}
+
+fn addLesson(string : training_plan_id, any : body) -> any
+{
+    if body["lessonType"] == null || body["startTime"] == null || body["endTime"] == null || body["instructorName"] == null
+        return s.makeResponse({ message : "lessonType, startTime, endTime and instructorName are required" }, s.status.bad_request)
+
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res
+        if e.value.trainingPlanId == training_plan_id {
+            if e.value.status == "Completed"
+                return s.makeResponse({ message : "Completed plan cannot be changed" }, s.status.bad_request)
+
+            auto : lesson = {
+                lessonId       : training_plan_id + "-lesson-" + e.value.lessons.size,
+                trainingPlanId : training_plan_id,
+                lessonType     : body.lessonType,
+                startTime      : body.startTime,
+                endTime        : body.endTime,
+                instructorName : body.instructorName,
+                status         : "Planned",
+            }
+
+            e.value.lessons ++ lesson
+            e.value.status = "Proposed"
+
+            if !base.update(e.id, e.value)
+                return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+            return s.makeResponse(lesson, s.status.created)
+        }
+
+    return s.makeResponse({ message : "Training plan not found" }, 404)
+}

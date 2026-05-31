@@ -1,0 +1,36 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn get(string : training_plan_id = "", any : params) -> any
+{
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    if training_plan_id != "" {
+        for auto : e in res
+            if e.value.trainingPlanId == training_plan_id
+                return s.makeResponse(e.value)
+
+        return s.makeResponse({ message : "Training plan not found" }, 404)
+    }
+
+    string : student_id = params["studentId"] == null ? "" : params["studentId"]
+    string : status = params["status"] == null ? "" : params["status"]
+    auto : filtered = []
+
+    for auto : e in res
+        if (student_id == "" || e.value.studentId == student_id)
+        && (status == "" || e.value.status == status)
+            filtered ++ e.value
+
+    return s.makeResponse(filtered)
+}

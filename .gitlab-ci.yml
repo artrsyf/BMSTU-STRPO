@@ -1,0 +1,53 @@
+image: docker:27
+
+services:
+  - name: docker:27-dind
+    command: ["--tls=false"]
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - test
+  - delivery
+
+before_script:
+  - apk add --no-cache curl
+  - docker info
+
+testing:
+  stage: test
+  script:
+    - chmod +x test/00-run-local test/01-student-flow test/02-training-flow test/03-exam-flow test/98-smoke-check test/99-demo-flow
+    - sh test/00-run-local
+    - sh test/98-smoke-check
+    - docker logs drivingschool-simodo-local > docker.log 2>&1 || true
+    - docker exec drivingschool-simodo-local sh -lc 'cat /tmp/base.log /tmp/students.log /tmp/training.log /tmp/exams.log' > simodo.log 2>&1 || true
+    - cp /tmp/drivingschool-demo.out demo.out
+  after_script:
+    - docker rm -f drivingschool-simodo-local || true
+  artifacts:
+    when: always
+    paths:
+      - demo.out
+      - docker.log
+      - simodo.log
+    expire_in: 30 minutes
+
+pages:
+  stage: delivery
+  needs:
+    - job: testing
+      artifacts: true
+  script:
+    - mkdir -p public
+    - printf '<!doctype html><meta charset="utf-8"><title>Driving School SIMODO demo</title><pre>' > public/index.html
+    - sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' demo.out >> public/index.html
+    - printf '</pre>' >> public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

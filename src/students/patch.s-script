@@ -1,0 +1,47 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn isValidStatus(string : status) -> bool
+{
+    return status == "Registered"
+        || status == "InTraining"
+        || status == "TrainingCompleted"
+        || status == "AdmittedToExam"
+        || status == "ExamPassed"
+        || status == "ExamFailed"
+}
+
+fn patchStatus(string : student_id, any : body) -> any
+{
+    if body["status"] == null
+        return s.makeResponse({ message : "status is required" }, s.status.bad_request)
+
+    string : status = body.status
+
+    if !isValidStatus(status)
+        return s.makeResponse({ message : "Invalid student status" }, s.status.bad_request)
+
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    for auto : e in res
+        if e.value.studentId == student_id {
+            e.value.status = status
+
+            if !base.update(e.id, e.value)
+                return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+            return s.makeResponse(e.value)
+        }
+
+    return s.makeResponse({ message : "Student not found" }, 404)
+}

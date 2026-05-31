@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT="${ROOT:-$(pwd)}"
+
+echo "### Create training plan"
+curl -i -s -X POST http://localhost:8082/training-plans \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/training-plan-create.json"
+echo
+
+echo "### Add lesson"
+curl -i -s -X POST http://localhost:8082/training-plans/training-plan-0/lessons \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/lesson-theory-create.json"
+echo
+
+echo "### Try to complete plan before lesson completion, expect HTTP 400"
+curl -i -s -X PATCH http://localhost:8082/training-plans/training-plan-0/complete
+echo
+
+echo "### Complete lesson"
+curl -i -s -X PATCH http://localhost:8082/lessons/training-plan-0-lesson-0/complete
+echo
+
+echo "### Complete training plan"
+curl -i -s -X PATCH http://localhost:8082/training-plans/training-plan-0/complete
+echo
+
+echo "### Mark student training completed"
+curl -i -s -X PATCH http://localhost:8081/students/student-0/status \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/student-status-training-completed.json"
+echo

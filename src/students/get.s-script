@@ -1,0 +1,34 @@
+import "//http/response.s-script" : s
+import "-base-setup.s-script" : base_setup
+import "//http/base.s-script" :
+    base = {
+        server      : base_setup.server,
+        port        : base_setup.port,
+        database    : base_setup.database,
+        aggregate   : base_setup.aggregate,
+    }
+
+fn get(string : student_id = "", any : params) -> any
+{
+    auto : res = base.getAll()
+
+    if res == null
+        return s.makeResponse({ message : base.error() }, s.status.internal_server_error)
+
+    if student_id != "" {
+        for auto : e in res
+            if e.value.studentId == student_id
+                return s.makeResponse(e.value)
+
+        return s.makeResponse({ message : "Student not found" }, 404)
+    }
+
+    string : status = params["status"] == null ? "" : params["status"]
+    auto : filtered = []
+
+    for auto : e in res
+        if status == "" || e.value.status == status
+            filtered ++ e.value
+
+    return s.makeResponse(filtered)
+}

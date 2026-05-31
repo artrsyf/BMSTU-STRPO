@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT="${ROOT:-$(pwd)}"
+
+echo "### Create exam application"
+curl -i -s -X POST http://localhost:8083/exam-applications \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/exam-application-create.json"
+echo
+
+echo "### Get exam application"
+curl -i -s http://localhost:8083/exam-applications/exam-application-0
+echo
+
+echo "### Send exam application to GAI"
+curl -i -s -X PATCH http://localhost:8083/exam-applications/exam-application-0/send-to-gai
+echo
+
+echo "### Set exam result"
+curl -i -s -X PATCH http://localhost:8083/exam-applications/exam-application-0/result \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/exam-result-passed.json"
+echo
+
+echo "### Mark student exam passed"
+curl -i -s -X PATCH http://localhost:8081/students/student-0/status \
+  -H "Content-Type: application/json" \
+  --data-binary "@$ROOT/test/payloads/student-status-exam-passed.json"
+echo

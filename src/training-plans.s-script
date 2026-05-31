@@ -1,0 +1,38 @@
+import "//http/request.s-script" : s
+import "//http/response.s-script" : r
+
+auto : path = s.path.slice(1).split("/")
+
+if s.method == "POST" {
+    import "training-plans/add.s-script" : plans
+
+    if path.size == 1
+        s.a.value = plans.add(s.body)
+    else if path.size == 3 && path[2] == "lessons"
+        s.a.value = plans.addLesson(path[1], s.body)
+    else
+        s.a.value = r.makeResponse({ message : "Unsupported training plan operation" }, r.status.bad_request)
+
+    await s.a.resume(true)
+}
+else if s.method == "GET" {
+    import "training-plans/get.s-script" : plans
+    s.a.value = plans.get(path.size > 1 ? path[1] : "", s.params)
+    await s.a.resume(true)
+}
+else if s.method == "PATCH" {
+    import "training-plans/patch.s-script" : plans
+
+    if path.size == 3 && path[2] == "approve"
+        s.a.value = plans.approve(path[1])
+    else if path.size == 3 && path[2] == "complete"
+        s.a.value = plans.complete(path[1])
+    else
+        s.a.value = r.makeResponse({ message : "Unsupported training plan operation" }, r.status.bad_request)
+
+    await s.a.resume(true)
+}
+else {
+    s.a.value = r.makeResponse({ message : "Method is not supported" }, r.status.bad_request)
+    await s.a.resume(true)
+}
