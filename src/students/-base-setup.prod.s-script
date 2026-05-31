@@ -1,0 +1,7 @@
+const string :
+    server = "host1877687-1.hostland.pro",
+    database = "drivingschool-students",
+    aggregate = "students"
+
+const int :
+    port = 2022

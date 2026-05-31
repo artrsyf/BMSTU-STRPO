@@ -1,0 +1,7 @@
+const string :
+    server = "localhost",
+    database = "drivingschool-students",
+    aggregate = "students"
+
+const int :
+    port = 2022

@@ -437,9 +437,9 @@ GitLab runner.
 
 ### Автоматический deploy
 
-После успешных тестов CI автоматически запускает job `deploy`. Она копирует
-текущий проект на SIMODO deploy-хост через SSH/rsync и затем вызывает удаленный
-скрипт перезапуска:
+После успешных тестов CI автоматически запускает job `deploy`. Она собирает
+deploy-пакет из содержимого `src/`, копирует его на SIMODO deploy-хост через
+SSH/rsync и затем вызывает удаленный скрипт перезапуска:
 
 ```bash
 /root/simodo-stellar/restart_docker.sh
@@ -454,7 +454,7 @@ GitLab runner.
 Ожидаемый публичный адрес после развертывания:
 
 ```text
-http://<SERVER_IP>/Driving/...
+http://<SERVER_IP>:2021/driving/...
 ```
 
 Для deploy в GitLab CI/CD Variables должны быть заданы:
@@ -465,10 +465,35 @@ http://<SERVER_IP>/Driving/...
 - `DEPLOY_MODULE_PATH` - опционально, по умолчанию
   `/root/simodo-stellar/modules/driving/`;
 - `PUBLIC_BASE_URL` - опционально, по умолчанию
-  `http://$SERVER_IP/driving`.
+  `http://$SERVER_IP:2021/driving`.
 
-Перед копированием job исключает локальные/CI-артефакты: `.git`, `demo.out`,
-`simodo.log`, `index.html`, `public`.
+Важно: на сервер отправляется не весь репозиторий, а содержимое `src/`. Это
+эквивалентно примеру из методички:
+
+```text
+rsync -a ./vortex/ vortex@$SERVER_IP:/root/simodo-stellar/modules/vortex/
+```
+
+В примере `./vortex/` уже является готовым SIMODO-модулем. В нашем проекте
+готовый SIMODO-модуль - это директория `src/`, поэтому deploy делает
+эквивалентную операцию:
+
+```text
+rsync -a src/ driving@$SERVER_IP:/root/simodo-stellar/modules/driving/
+```
+
+Если отправить весь репозиторий, файл окажется глубже, например в
+`driving/src/students.s-script`, а station при запросе `/driving/students`
+ожидает модульный файл уровня `driving/students.s-script`. В этом случае он
+вернет `500`.
+
+Перед отправкой job также заменяет локальные настройки хранилища на prod:
+
+```text
+students/-base-setup.prod.s-script -> students/-base-setup.s-script
+training-plans/-base-setup.prod.s-script -> training-plans/-base-setup.s-script
+exam-applications/-base-setup.prod.s-script -> exam-applications/-base-setup.s-script
+```
 
 После перезапуска deploy job проверяет доступность:
 
