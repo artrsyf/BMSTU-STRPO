@@ -1,0 +1,44 @@
+stages:
+  - build
+  - deploy
+  - smoke
+
+variables:
+  IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  IMAGE_LATEST: "$CI_REGISTRY_IMAGE:latest"
+  WORK_NAME: "driving-school"
+  APP_NAME: "driving-school"
+  KUBE_NAMESPACE: "driving-school"
+  PUBLIC_BASE_URL: "http://labs.local/driving-school"
+  CLUSTER_INGRESS_URL: "http://traefik.kube-system.svc.cluster.local"
+
+build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - printf '{"auths":{"%s":{"username":"%s","password":"%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "$CI_PROJECT_DIR"
+      --dockerfile "$CI_PROJECT_DIR/deploy/local-k3s/Dockerfile"
+      --destination "$IMAGE"
+      --destination "$IMAGE_LATEST"
+      --insecure-registry "$CI_REGISTRY"
+
+deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl apply -f deploy/local-k3s/app.yaml
+    - kubectl -n "$KUBE_NAMESPACE" set image deployment/"$APP_NAME" "$APP_NAME"="$IMAGE"
+    - kubectl -n "$KUBE_NAMESPACE" rollout status deployment/"$APP_NAME" --timeout=180s
+
+smoke:
+  stage: smoke
+  image: curlimages/curl:latest
+  script:
+    - 'curl --connect-timeout 10 --max-time 30 -fsS -H "Host: labs.local" "$CLUSTER_INGRESS_URL/driving-school/students"'
+    - 'curl --connect-timeout 10 --max-time 30 -fsS -H "Host: labs.local" "$CLUSTER_INGRESS_URL/driving-school/training-plans"'
+    - 'curl --connect-timeout 10 --max-time 30 -fsS -H "Host: labs.local" "$CLUSTER_INGRESS_URL/driving-school/exam-applications"'
