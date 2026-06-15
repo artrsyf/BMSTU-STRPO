@@ -1,0 +1,17 @@
+rbac:
+  create: true
+
+runners:
+  privileged: false
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        image = "alpine:latest"
+        helper_image_flavor = "alpine"
+        poll_timeout = 180
+        cpu_request = "100m"
+        memory_request = "128Mi"
+        cpu_limit = "1"
+        memory_limit = "1Gi"
+

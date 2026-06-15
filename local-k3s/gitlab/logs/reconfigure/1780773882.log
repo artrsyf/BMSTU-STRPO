@@ -1,0 +1,69 @@
+# Logfile created on 2026-06-06 19:24:42 +0000 by logger.rb/v1.7.0
+[2026-06-06T19:24:43+00:00] INFO: Started Cinc Zero at chefzero://localhost:1 with repository at /opt/gitlab/embedded (One version per cookbook)
+[2026-06-06T19:24:43+00:00] INFO: *** Cinc Client 18.3.0 ***
+[2026-06-06T19:24:43+00:00] INFO: Platform: x86_64-linux
+[2026-06-06T19:24:43+00:00] INFO: Cinc-client pid: 32
+[2026-06-06T19:24:43+00:00] INFO: Setting the run_list to ["recipe[gitlab-base]"] from CLI options
+[2026-06-06T19:24:43+00:00] INFO: Run List is [recipe[gitlab-base]]
+[2026-06-06T19:24:43+00:00] INFO: Run List expands to [gitlab-base]
+[2026-06-06T19:24:43+00:00] INFO: Starting Cinc Client Run for gitlab.local
+[2026-06-06T19:24:43+00:00] INFO: Running start handlers
+[2026-06-06T19:24:43+00:00] INFO: Start handlers complete.
+[2026-06-06T19:24:43+00:00] INFO: Loading cookbooks [gitlab-base@0.1.0, package@0.1.0, gitlab@0.0.1, runit@5.1.7, logrotate@0.1.0, postgresql@0.1.0, redis@0.1.0, monitoring@0.1.0, registry@0.1.0, mattermost@0.1.0, consul@0.1.0, gitaly@0.1.0, praefect@0.1.0, gitlab-kas@0.1.0, gitlab-pages@0.1.0, letsencrypt@0.1.0, nginx@0.1.0, oak@0.1.0, acme@4.2.2, crond@0.1.0]
+[2026-06-06T19:24:45+00:00] INFO: Generating default secrets
+[2026-06-06T19:24:45+00:00] INFO: Generating /etc/gitlab/gitlab-secrets.json file
+[2026-06-06T19:24:45+00:00] INFO: directory[/etc/gitlab] owner changed to 0
+[2026-06-06T19:24:45+00:00] INFO: directory[/etc/gitlab] group changed to 0
+[2026-06-06T19:24:45+00:00] INFO: directory[/etc/gitlab] mode changed to 775
+[2026-06-06T19:24:45+00:00] WARN: gitlab-rails does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] INFO: Skipped selecting an init system because it was explicitly disabled
+[2026-06-06T19:24:45+00:00] WARN: gitlab-shell does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-sshd does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: logrotate does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: logrotate does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: puma does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-rails does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-shell does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-workhorse does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-pages does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-kas does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitaly does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: mailroom does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitaly does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: postgresql does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: postgresql does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] INFO: /opt/gitlab/init/postgresql status does not exist.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-kas does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: puma does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: sidekiq does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:45+00:00] WARN: gitlab-workhorse does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: registry does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: gitlab-exporter does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: redis-exporter does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: prometheus does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: alertmanager does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] WARN: postgres-exporter does not have a log_group or default logdir mode defined. Setting to 0700.
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/opt/gitlab] owner changed to 0
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/opt/gitlab] group changed to 0
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/opt/gitlab] mode changed to 755
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/log/gitlab] owner changed to 0
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/log/gitlab] group changed to 0
+[2026-06-06T19:24:46+00:00] INFO: directory[Create /var/log/gitlab] mode changed to 755
+[2026-06-06T19:24:46+00:00] INFO: template[/var/opt/gitlab/.gitconfig] owner changed to 998
+[2026-06-06T19:24:46+00:00] INFO: template[/var/opt/gitlab/.gitconfig] group changed to 998
+[2026-06-06T19:24:46+00:00] INFO: template[/var/opt/gitlab/.gitconfig] mode changed to 644
+[2026-06-06T19:24:46+00:00] INFO: directory[/var/opt/gitlab/.bundle] owner changed to 998
+[2026-06-06T19:24:46+00:00] INFO: directory[/var/opt/gitlab/.bundle] group changed to 998
+[2026-06-06T19:24:46+00:00] INFO: Running queued delayed notifications before re-raising exception
+[2026-06-06T19:24:46+00:00] ERROR: Running exception handlers
+[2026-06-06T19:24:46+00:00] ERROR: Exception handlers complete
+[2026-06-06T19:24:46+00:00] FATAL: Stacktrace dumped to /opt/gitlab/embedded/cookbooks/cache/cinc-stacktrace.out
+[2026-06-06T19:24:46+00:00] FATAL: ---------------------------------------------------------------------------------------
+[2026-06-06T19:24:46+00:00] FATAL: PLEASE PROVIDE THE CONTENTS OF THE stacktrace.out FILE (above) IF YOU FILE A BUG REPORT
+[2026-06-06T19:24:46+00:00] FATAL: ---------------------------------------------------------------------------------------
+[2026-06-06T19:24:46+00:00] FATAL: Mixlib::ShellOut::ShellCommandFailed: storage_directory[/var/opt/gitlab/git-data/repositories] (gitaly::git_data_dirs line 25) had an error: Mixlib::ShellOut::ShellCommandFailed: ruby_block[directory resource: /var/opt/gitlab/git-data/repositories] (gitaly::git_data_dirs line 36) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+---- Begin output of chgrp git /var/opt/gitlab/git-data/repositories ----
+STDOUT: 
+STDERR: chgrp: changing group of '/var/opt/gitlab/git-data/repositories': Operation not permitted
+---- End output of chgrp git /var/opt/gitlab/git-data/repositories ----
+Ran chgrp git /var/opt/gitlab/git-data/repositories returned 1
